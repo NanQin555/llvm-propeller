@@ -38,6 +38,7 @@ void PerfDataPathReader::ReadPathsAndApplyCallBack(
              .sample_time = absl::FromUnixNanos(event.sample_time_ns())});
         const auto &branch_stack = event.branch_stack();
         if (branch_stack.empty()) return;
+        std::ostringstream oss;
         for (int p = branch_stack.size() - 1; p >= 0; --p) {
           const auto &branch_entry = branch_stack.Get(p);
           uint64_t from = perf_data_reader_->RuntimeAddressToBinaryAddress(
@@ -45,9 +46,21 @@ void PerfDataPathReader::ReadPathsAndApplyCallBack(
           uint64_t to = perf_data_reader_->RuntimeAddressToBinaryAddress(
               event.pid(), branch_entry.to_ip());
           lbr_path.branches.push_back({.from = from, .to = to});
+
+          oss << "\nReadPathsAndApplyCallBack: BinaryAddressBranch Info: \n";
+          AbslStringify(oss, lbr_path.branches.back());
+          std::cout << oss.str();                     
+
         }
-        handle_paths_callback(
-            address_mapper_->ExtractIntraFunctionPaths(lbr_path));
+        paths = address_mapper_->ExtractIntraFunctionPaths(lbr_path);
+        handle_paths_callback(paths);
+        
+        oss << "\nReadPathsAndApplyCallBack: FlatBbHandleBranchPath Info: \n";
+        for (auto path : paths) {
+          AbslStringify(oss, path);
+          std::cout << oss.str();    
+        }
+
       });
 }
 }  // namespace propeller

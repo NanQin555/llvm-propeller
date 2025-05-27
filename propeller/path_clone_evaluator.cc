@@ -307,6 +307,12 @@ void PathTreeCloneEvaluator::EvaluateCloningsForSubtree(
     const absl::flat_hash_set<int> &path_preds_in_path,
     std::vector<EvaluatedPathCloning> &clonings,
     const FunctionPathProfile &function_path_profile) {
+
+  std::ostringstream oss;
+  oss << "\nPath Tree Info: \n";
+  AbslStringify(oss, path_tree);
+  std::cout << oss.str();
+
   if (path_tree.parent() == nullptr)
     CHECK_EQ(path_length, 1) << "path_length must be 1 for root.";
   if (path_length > path_profile_options_.max_path_length()) return;
@@ -381,6 +387,13 @@ void PathTreeCloneEvaluator::EvaluateCloningsForPath(
         path_profile_options_.min_initial_cloning_score(), optimal_chain_info_,
         function_path_profile);
     if (!evaluated_cloning.ok()) continue;
+
+    std::ostringstream oss;
+    oss << "\nCloning Info: \n";
+    AbslStringify(oss, cloning);
+    std::cout << oss.str();
+
+
     clonings.push_back(std::move(*std::move(evaluated_cloning)));
   }
 }
@@ -404,9 +417,15 @@ absl::flat_hash_map<int, std::vector<EvaluatedPathCloning>> EvaluateAllClonings(
                    /*initial_chains=*/{})
             .OrderAll()
             .front();
+
+      // std::ostringstream oss;
+      // oss << "\nCFG Info: \n";
+      // AbslStringify(oss, cfg);
+      // std::cout << oss.str();
+      
     auto &clonings = cloning_scores_by_function_index[function_index];
     for (const auto &[root_bb_index, path_tree] :
-         function_path_profile.path_trees_by_root_bb_index()) {
+         function_path_tree.path_trees_by_root_bb_index()) {
       PathTreeCloneEvaluator(cfg, &fast_response_original_optimal_chain_info,
                              &path_profile_options, &code_layout_params)
           .EvaluateCloningsForSubtree(*path_tree, /*path_length=*/1, {},

@@ -20,8 +20,7 @@ project(llvm-external NONE)
 
 include(ExternalProject)
 ExternalProject_Add(llvm
-  URL                         "${propeller_llvm_download_url}"
-  SOURCE_DIR                  "${propeller_llvm_src_dir}"
+  SOURCE_DIR                  "/home/web_server/PropellerBBClone/llvm-ks-llvm17"
   BINARY_DIR                  "${propeller_llvm_build_dir}"
   CONFIGURE_COMMAND           ""
   BUILD_COMMAND               ""

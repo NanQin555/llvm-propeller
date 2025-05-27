@@ -69,6 +69,12 @@ void PathTracer::HandleFallThroughBlocks(std::optional<FlatBbHandle> from_bb,
 void PathTracer::TracePath(const FlatBbHandleBranchPath &path) && {
   std::optional<FlatBbHandle> last_to_bb = std::nullopt;
   for (const FlatBbHandleBranch &branch : path.branches) {
+
+      // std::ostringstream oss;
+      // oss << "\nFlatBbHandleBranch Info: \n";
+      // AbslStringify(oss, branch);
+      // std::cout << oss.str();
+      
     HandleFallThroughBlocks(last_to_bb, branch.from_bb, path.sample_time);
     if (branch.is_callsite()) handler_->HandleCalls(branch.call_rets);
     if (branch.to_bb.has_value()) {
@@ -314,6 +320,12 @@ void ProgramCfgPathAnalyzer::AnalyzePaths(std::optional<int> paths_to_analyze) {
     const FlatBbHandleBranchPath &path = bb_branch_paths_[i];
     if (i != 0) CHECK_GE(path.sample_time, bb_branch_paths_[i - 1].sample_time);
     if (!IsFromFunctionWithHotJoinBbs(path)) continue;
+
+      std::ostringstream oss;
+      oss << "\nFlatBbHandleBranchPath Info: \n";
+      AbslStringify(oss, path);
+      std::cout << oss.str();
+      
     int path_function_index =
         path.branches.front().from_bb.has_value()
             ? path.branches.front().from_bb->function_index
