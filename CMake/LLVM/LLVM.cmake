@@ -15,14 +15,23 @@
 #
 # Integrates LLVM into the build.
 
-# LINT.IfChange(commit_hash)
-set(_LLVM_HASH f58ce1152703ca753794b8cef36da30bd2668d0f)
-# LINT.ThenChange(../../WORKSPACE.bzlmod:llvm_commit_hash)
+
+set(USE_LOCAL_LLVM ON) 
+set(LOCAL_LLVM_SRC_DIR "/home/web_server/PropellerBBClone/llvm-ks-llvm17")
+
+if(USE_LOCAL_LLVM)
+  set(propeller_llvm_src_dir "${LOCAL_LLVM_SRC_DIR}")
+  set(propeller_llvm_download_url "")
+else()
+  # LINT.IfChange(commit_hash)
+  set(_LLVM_HASH f58ce1152703ca753794b8cef36da30bd2668d0f)
+  # LINT.ThenChange(../../WORKSPACE.bzlmod:llvm_commit_hash)
+  set(propeller_llvm_download_url https://github.com/llvm/llvm-project/archive/${_LLVM_HASH}.zip)
+  set(propeller_llvm_src_dir ${CMAKE_BINARY_DIR}/llvm-src)
+endif()
 
 set(propeller_llvm_build_dir ${CMAKE_BINARY_DIR}/llvm-build)
-set(propeller_llvm_download_url https://github.com/llvm/llvm-project/archive/${_LLVM_HASH}.zip)
-set(propeller_llvm_src_dir ${CMAKE_BINARY_DIR}/llvm-src)
-
+  
 # Configure the external llvm project.
 configure_file(
   ${CMAKE_CURRENT_LIST_DIR}/CMakeLists.txt.in

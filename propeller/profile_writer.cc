@@ -279,4 +279,59 @@ void PropellerProfileWriter::Write(const PropellerProfile &profile) const {
   if (options_.has_cfg_dump_dir_name())
     DumpCfgs(profile, options_.cfg_dump_dir_name());
 }
+
+void PropellerProfileWriter::WriteWithBBHash(const PropellerProfile &profile) const {
+  std::ofstream cc_profile_os(options_.cluster_out_name());
+  for (const auto &[section_name, section_function_chain_info] :
+       profile.functions_chain_info_by_section_name) {
+    for (const FunctionChainInfo &func_layout_info :
+         section_function_chain_info) {
+      const ControlFlowGraph *cfg =
+          profile.program_cfg->GetCfgByIndex(func_layout_info.function_index);
+      CHECK_NE(cfg, nullptr);
+      // Print all alias names of the function.
+      cc_profile_os << "!" << llvm::join(cfg->names(), profile_encoding_.function_name_separator)
+                    << " " << cfg->nodes().size() << "\n";
+      auto &chains = func_layout_info.bb_chains;
+      std::unordered_set<int> visited;        
+      for (unsigned chain_id = 0; chain_id < chains.size();
+      ++chain_id) {
+        auto &chain = chains[chain_id];
+        std::vector<FullIntraCfgId> bb_ids_in_chain =chains[chain_id].GetAllBbs();
+        for (int bbi = 0; bbi < bb_ids_in_chain.size(); ++bbi) {
+          const auto &full_bb_id = bb_ids_in_chain[bbi];
+          auto node = cfg->GetNodeById(full_bb_id.intra_cfg_id);
+          visited.insert(node.bb_id());
+          cc_profile_os << "!!0x" << std::hex << node.hash() 
+                        << " " << std::dec << node.CalculateFrequency()
+                        << " " << std::dec << full_bb_id.bb_id << "\n";
+        }
+      }
+      for (auto &node : cfg->nodes()) {
+        if (visited.count(node->bb_id()) == 0){
+          cc_profile_os << "!!0x" << std::hex << node->hash()
+                        << " " << std::dec << node->CalculateFrequency()
+                        << " " << std::dec << node->bb_id() << "\n";
+        }
+      }
+
+      // Print cloning paths.
+      if (cfg->clone_paths().empty()) {
+        continue;
+      }
+      for (const std::vector<int> &clone_path : cfg->clone_paths()) {
+        cc_profile_os << profile_encoding_.clone_path_specifier
+                      << absl::StrJoin(
+                             clone_path, " ",
+                             [&](std::string *out, const int bb_index) {
+                               absl::StrAppend(out,
+                                               cfg->nodes()[bb_index]->hash());
+                             })
+                      << "\n";
+      }
+    }
+  }
+}
+
+
 }  // namespace propeller
