@@ -20,7 +20,6 @@ project(llvm-external NONE)
 
 include(ExternalProject)
 ExternalProject_Add(llvm
-  URL                         "${propeller_llvm_download_url}"
   SOURCE_DIR                  "${propeller_llvm_src_dir}"
   BINARY_DIR                  "${propeller_llvm_build_dir}"
   CONFIGURE_COMMAND           ""
@@ -29,3 +28,4 @@ ExternalProject_Add(llvm
   TEST_COMMAND                ""
   DOWNLOAD_EXTRACT_TIMESTAMP  TRUE
 )
+#   URL                         "${propeller_llvm_download_url}"

@@ -45,16 +45,16 @@
 #include "propeller/text_proto_flag.h"
 
 namespace {
-enum class ProfileType {
-  kPerfLbr,
-  kPerfSpe,
-  kFrequenciesProto,
-};
+  enum class ProfileType {
+    kPerfLbr,
+    kPerfSpe,
+    kFrequenciesProto,
+  };
 
-inline bool AbslParseFlag(absl::string_view text, ProfileType* out,
-                          std::string* err);
+inline bool AbslParseFlag(absl::string_view text, ProfileType *out,
+                          std::string *err);
 
-inline std::string AbslUnparseFlag(ProfileType type);
+  inline std::string AbslUnparseFlag(ProfileType type);
 }  // namespace
 
 ABSL_FLAG(std::string, binary, "", "Path to the binary.");
@@ -68,14 +68,15 @@ ABSL_FLAG(std::string, ld_profile, "", "Output ld profile");
 ABSL_FLAG(propeller::TextProtoFlag<propeller::PropellerOptions>,
           propeller_options, {},
           "Override for propeller options (debug only).");
+ABSL_FLAG(bool, use_bb_hash, false, "Use BB hash for profile generation.");
 
 namespace {
-using ::propeller::GeneratePropellerProfiles;
-using ::propeller::InputProfile;
-using ::propeller::PropellerOptions;
+  using ::propeller::GeneratePropellerProfiles;
+  using ::propeller::InputProfile;
+  using ::propeller::PropellerOptions;
 
-inline bool AbslParseFlag(absl::string_view text, ProfileType* out,
-                          std::string* err) {
+inline bool AbslParseFlag(absl::string_view text, ProfileType *out,
+                          std::string *err) {
   const absl::flat_hash_map<absl::string_view, ProfileType> kFlagOptions = {
       {"PERF_LBR", ProfileType::kPerfLbr},
       {"PERF_SPE", ProfileType::kPerfSpe},
@@ -93,28 +94,28 @@ inline bool AbslParseFlag(absl::string_view text, ProfileType* out,
 
 inline std::string AbslUnparseFlag(ProfileType type) {
   switch (type) {
-    case ProfileType::kPerfLbr:
-      return "PERF_LBR";
-    case ProfileType::kPerfSpe:
-      return "PERF_SPE";
-    case ProfileType::kFrequenciesProto:
-      return "FREQUENCIES_PROTO";
+  case ProfileType::kPerfLbr:
+    return "PERF_LBR";
+  case ProfileType::kPerfSpe:
+    return "PERF_SPE";
+  case ProfileType::kFrequenciesProto:
+    return "FREQUENCIES_PROTO";
   }
 }
 
 propeller::ProfileType ToProtoProfileType(ProfileType type) {
   switch (type) {
-    case ProfileType::kPerfLbr:
-      return propeller::ProfileType::PERF_LBR;
-    case ProfileType::kPerfSpe:
-      return propeller::ProfileType::PERF_SPE;
-    case ProfileType::kFrequenciesProto:
-      return propeller::ProfileType::FREQUENCIES_PROTO;
+  case ProfileType::kPerfLbr:
+    return propeller::ProfileType::PERF_LBR;
+  case ProfileType::kPerfSpe:
+    return propeller::ProfileType::PERF_SPE;
+  case ProfileType::kFrequenciesProto:
+    return propeller::ProfileType::FREQUENCIES_PROTO;
   }
 }
 }  // namespace
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
   absl::SetProgramUsageMessage(argv[0]);
   absl::ParseCommandLine(argc, argv);
 
@@ -122,9 +123,12 @@ int main(int argc, char* argv[]) {
   options.set_binary_name(absl::GetFlag(FLAGS_binary));
   options.set_cluster_out_name(absl::GetFlag(FLAGS_cc_profile));
   options.set_symbol_order_out_name(absl::GetFlag(FLAGS_ld_profile));
-
-  for (const std::string& profile : absl::GetFlag(FLAGS_profile)) {
-    InputProfile* input_profile = options.add_input_profiles();
+  options.set_use_bb_hash(absl::GetFlag(FLAGS_use_bb_hash));
+  if (options.use_bb_hash()) {
+    options.set_cluster_out_version(propeller::ClusterEncodingVersion::VERSION_2);
+  }
+  for (const std::string &profile : absl::GetFlag(FLAGS_profile)) {
+    InputProfile *input_profile = options.add_input_profiles();
     input_profile->set_name(profile);
     input_profile->set_type(
         ToProtoProfileType(absl::GetFlag(FLAGS_profile_type)));

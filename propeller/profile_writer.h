@@ -32,6 +32,7 @@ class PropellerProfileWriter {
   // Writes code layout result in `all_functions_cluster_info` into the output
   // file.
   void Write(const PropellerProfile& profile) const;
+  void WriteWithBBHash(const PropellerProfile &profile) const;
 
  private:
   struct ProfileEncoding {
@@ -63,6 +64,14 @@ class PropellerProfileWriter {
                 .module_name_specifier = "m ",
                 .cluster_specifier = "c",
                 .clone_path_specifier = "p"};
+      case ClusterEncodingVersion::VERSION_2:
+        return {.version = version,
+                .version_specifier = "v2",
+                .function_name_specifier = "!",
+                .function_name_separator = "/",
+                .module_name_specifier = "M=",
+                .cluster_specifier = "!!",
+                .clone_path_specifier = "!!!"};
       default:
         LOG(FATAL) << "Unknown value for ClusterEncodingVersion: "
                    << static_cast<int>(version);

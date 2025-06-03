@@ -14,6 +14,7 @@ enum ClusterEncodingVersion {
   CLUSTER_ENCODING_VERSION_UNSPECIFIED = 0;
   VERSION_0 = 1;
   VERSION_1 = 2;
+  VERSION_2 = 3;
   LATEST = 2;
 }
 
@@ -85,6 +86,9 @@ message PropellerOptions {
 
   // Write the edge profiles in the cluster file.
   bool write_cfg_profile = 16 [default = true];
+
+  // Whether generate propeller profile with basic block hash and frequency.
+  bool use_bb_hash = 17 [default = false];
 }
 
 // Next Available: 13.

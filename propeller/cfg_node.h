@@ -36,7 +36,7 @@ class CFGNode final {
  public:
   CFGNode(uint64_t addr, int bb_index, int bb_id, int size,
           const llvm::object::BBAddrMap::BBEntry::Metadata &metadata,
-          int function_index, int freq = 0, int clone_number = 0,
+          uint64_t hash, int function_index, int freq = 0, int clone_number = 0,
           int node_index = -1)
       : inter_cfg_id_({function_index, {bb_index, clone_number}}),
         bb_id_(bb_id),
@@ -44,13 +44,14 @@ class CFGNode final {
         addr_(addr),
         size_(size),
         metadata_(metadata),
+        hash_(hash),
         freq_(freq) {}
 
   // Returns a clone of `*this` with the given assigned `clone_number`, but with
   // zero frequency and empty edges.
   std::unique_ptr<CFGNode> Clone(int clone_number, int node_index) const {
     return std::make_unique<CFGNode>(addr_, bb_index(), bb_id_, size_,
-                                     metadata_, function_index(), /*freq=*/0,
+                                     metadata_, hash_, function_index(), /*freq=*/0,
                                      clone_number, node_index);
   }
 
@@ -71,6 +72,8 @@ class CFGNode final {
   // edges.
   int CalculateFrequency() const;
   int size() const { return size_; }
+  uint64_t hash() const { return hash_; }
+  int freq() const { return freq_; }
   bool is_landing_pad() const { return metadata_.IsEHPad; }
   bool can_fallthrough() const { return metadata_.CanFallThrough; }
   bool has_return() const { return metadata_.HasReturn; }
@@ -136,6 +139,7 @@ class CFGNode final {
   const int addr_;
   int size_ = 0;
   const llvm::object::BBAddrMap::BBEntry::Metadata metadata_;
+  uint64_t hash_;
   int freq_ = 0;
 
   std::vector<CFGEdge *> intra_outs_ = {};  // Intra function edges.

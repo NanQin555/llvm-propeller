@@ -163,7 +163,12 @@ absl::Status GeneratePropellerProfiles(
   ASSIGN_OR_RETURN(PropellerProfile profile,
                    std::move(*std::move(profile_computer)).ComputeProfile());
 
-  PropellerProfileWriter(opts).Write(profile);
+  if (opts.use_bb_hash()) {
+    PropellerProfileWriter(opts).WriteWithBBHash(profile);
+  }
+  else {
+    PropellerProfileWriter(opts).Write(profile);
+  }
   LOG(INFO) << profile.stats.DebugString();
 
   return absl::OkStatus();
