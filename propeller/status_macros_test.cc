@@ -1,4 +1,4 @@
-// Copyright 2024 The Propeller Authors.
+// Copyright 2025 The Propeller Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "propeller/status_macros.h"
+#include "propeller/status_macros.h"  // Included for macros.
 
 #include "absl/status/status.h"
 #include "absl/status/status_matchers.h"
 #include "absl/status/statusor.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include "propeller/status_macros.h"
+#include "propeller/status_macros.h"  // Included for RET_CHECK.
 #include "propeller/status_testing_macros.h"
 
 namespace {

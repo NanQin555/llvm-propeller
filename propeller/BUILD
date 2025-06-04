@@ -1,4 +1,4 @@
-# Copyright 2024 The Propeller Authors.
+# Copyright 2025 The Propeller Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -409,6 +409,7 @@ cc_library(
         "@abseil-cpp//absl/functional:function_ref",
         "@abseil-cpp//absl/log",
         "@abseil-cpp//absl/log:check",
+        "@abseil-cpp//absl/strings",
         "@abseil-cpp//absl/types:span",
         "@llvm-project//llvm:Support",
     ],
@@ -787,6 +788,7 @@ cc_library(
         ":program_cfg",
         ":propeller_options_cc_proto",
         ":status_macros",
+        "@abseil-cpp//absl/base:core_headers",
         "@abseil-cpp//absl/base:nullability",
         "@abseil-cpp//absl/container:flat_hash_map",
         "@abseil-cpp//absl/container:flat_hash_set",

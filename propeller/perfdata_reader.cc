@@ -1,4 +1,4 @@
-// Copyright 2024 The Propeller Authors.
+// Copyright 2025 The Propeller Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@
 #include "propeller/lbr_aggregation.h"
 #include "propeller/perf_data_provider.h"
 #include "propeller/spe_tid_pid_provider.h"
-#include "propeller/status_macros.h"
+#include "propeller/status_macros.h"  // Included for macros.
 #include "src/quipper/arm_spe_decoder.h"
 #include "src/quipper/perf_data.pb.h"
 #include "src/quipper/perf_parser.h"
