@@ -324,14 +324,13 @@ void PropellerProfileWriter::WriteWithBBHash(const PropellerProfile &profile) co
                       << absl::StrJoin(
                              clone_path, " ",
                              [&](std::string *out, const int bb_index) {
-                               absl::StrAppend(out,
-                                               cfg->nodes()[bb_index]->hash());
+                               absl::StrAppend(out, "0x",
+                                               absl::Hex(cfg->nodes()[bb_index]->hash()));
                              })
                       << "\n";
       }
     }
   }
 }
-
 
 }  // namespace propeller
