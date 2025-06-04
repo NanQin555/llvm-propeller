@@ -1,4 +1,4 @@
-// Copyright 2024 The Propeller Authors.
+// Copyright 2025 The Propeller Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,7 +47,9 @@ CloneApplicatorStats ApplyClonings(
     const PathProfileOptions &path_profile_options,
     absl::flat_hash_map<int, std::vector<EvaluatedPathCloning>>
         clonings_by_function_index,
-    const ProgramCfg &program_cfg);
+    const ProgramCfg &program_cfg,
+    const absl::flat_hash_map<int, FunctionPathProfile>
+        &path_profiles_by_function_index);
 
 // Applies profitable clonings to `program_cfg` and returns the resulting
 // `ProgramCfg`. Updates `cloning_stats` accordingly.
