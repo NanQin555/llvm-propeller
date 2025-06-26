@@ -297,23 +297,23 @@ void PropellerProfileWriter::WriteWithBBHash(const PropellerProfile &profile) co
       for (unsigned chain_id = 0; chain_id < chains.size();
       ++chain_id) {
         auto &chain = chains[chain_id];
-        std::vector<FullIntraCfgId> bb_ids_in_chain =chains[chain_id].GetAllBbs();
+        std::vector<FullIntraCfgId> bb_ids_in_chain = chains[chain_id].GetAllBbs();
         for (int bbi = 0; bbi < bb_ids_in_chain.size(); ++bbi) {
           const auto &full_bb_id = bb_ids_in_chain[bbi];
           auto node = cfg->GetNodeById(full_bb_id.intra_cfg_id);
           visited.insert(node.bb_id());
           cc_profile_os << "!!0x" << std::hex << node.hash() 
                         << " " << std::dec << node.CalculateFrequency()
-                        << " " << std::dec << full_bb_id.bb_id << "\n";
+                        << " " << std::dec << full_bb_id.profile_bb_id() << "\n";
         }
       }
-      for (auto &node : cfg->nodes()) {
-        if (visited.count(node->bb_id()) == 0){
-          cc_profile_os << "!!0x" << std::hex << node->hash()
-                        << " " << std::dec << node->CalculateFrequency()
-                        << " " << std::dec << node->bb_id() << "\n";
-        }
-      }
+      // for (auto &node : cfg->nodes()) {
+      //   if (visited.count(node->bb_id()) == 0){
+      //     cc_profile_os << "!!0x" << std::hex << node->hash()
+      //                   << " " << std::dec << node->CalculateFrequency()
+      //                   << " " << std::dec << node->bb_id() << "\n";
+      //   }
+      // }
 
       // Print cloning paths.
       if (cfg->clone_paths().empty()) {
