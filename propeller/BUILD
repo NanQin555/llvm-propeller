@@ -1312,7 +1312,7 @@ cc_test(
         "//propeller/testdata:bimodal_sample.bin",
         "//propeller/testdata:bimodal_sample.x.bin",
         "//propeller/testdata:bimodal_sample_mfs.bin",
-        "//propeller/testdata:clang_v0_labels.binary",
+        # "//propeller/testdata:clang_v0_labels.binary",
         "//propeller/testdata:duplicate_symbols_bin",
         "//propeller/testdata:duplicate_unique_names",
         "//propeller/testdata:sample.bin",

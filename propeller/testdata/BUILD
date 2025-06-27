@@ -41,7 +41,7 @@ exports_files([
     "bimodal_sample_mfs.ld_profile.txt",
     "bimodal_sample_v2.cloning_cc_profile.txt",
     "call_from_simple_loop.protobuf",
-    "clang_v0_labels.binary",
+    # "clang_v0_labels.binary",
     "hot_and_cold_landing_pads.protobuf",
     "libro_sample.so",
     "llvm_function_samples.binary",

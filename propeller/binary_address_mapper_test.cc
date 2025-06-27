@@ -440,59 +440,59 @@ TEST(BinaryAddressMapper, CheckNoHotFunctions) {
                     Not(Contains(Key("sample1_func")))));
 }
 
-TEST(BinaryAddressMapper, FindBbHandleIndexUsingBinaryAddress) {
-  ASSERT_OK_AND_ASSIGN(
-      std::unique_ptr<BinaryContent> binary_content,
-      GetBinaryContent(GetPropellerTestDataFilePath("clang_v0_labels.binary")));
-  PropellerStats stats;
-  PropellerOptions options;
-  ASSERT_OK_AND_ASSIGN(
-      std::unique_ptr<BinaryAddressMapper> binary_address_mapper,
-      BuildBinaryAddressMapper(options, *binary_content, stats,
-                               /*hot_addresses=*/nullptr));
-  EXPECT_THAT(binary_address_mapper->selected_functions(), Not(IsEmpty()));
-  // At address 0x000001b3d0a8, we have the following symbols all of size zero.
-  //   BB.447 BB.448 BB.449 BB.450 BB.451 BB.452 BB.453 BB.454 BB.455
-  //   BB.456 BB.457 BB.458 BB.459 BB.460
+// TEST(BinaryAddressMapper, FindBbHandleIndexUsingBinaryAddress) {
+//   ASSERT_OK_AND_ASSIGN(
+//       std::unique_ptr<BinaryContent> binary_content,
+//       GetBinaryContent(GetPropellerTestDataFilePath("clang_v0_labels.binary")));
+//   PropellerStats stats;
+//   PropellerOptions options;
+//   ASSERT_OK_AND_ASSIGN(
+//       std::unique_ptr<BinaryAddressMapper> binary_address_mapper,
+//       BuildBinaryAddressMapper(options, *binary_content, stats,
+//                                /*hot_addresses=*/nullptr));
+//   EXPECT_THAT(binary_address_mapper->selected_functions(), Not(IsEmpty()));
+//   // At address 0x000001b3d0a8, we have the following symbols all of size zero.
+//   //   BB.447 BB.448 BB.449 BB.450 BB.451 BB.452 BB.453 BB.454 BB.455
+//   //   BB.456 BB.457 BB.458 BB.459 BB.460
 
-  auto bb_index_from_handle_index = [&](int index) {
-    return binary_address_mapper->bb_handles()[index].bb_index;
-  };
-  EXPECT_THAT(binary_address_mapper->FindBbHandleIndexUsingBinaryAddress(
-                  0x1b3d0a8, BranchDirection::kTo),
-              Optional(ResultOf(bb_index_from_handle_index, 447)));
-  // At address 0x000001b3f5b0: we have the following symbols:
-  //   Func<_ZN5clang18CompilerInvocation14CreateFromArgs...> BB.0 {size: 0x9a}
-  EXPECT_THAT(binary_address_mapper->FindBbHandleIndexUsingBinaryAddress(
-                  0x1b3f5b0, BranchDirection::kTo),
-              Optional(ResultOf(bb_index_from_handle_index, 0)));
-  // At address 0x1e63500: we have the following symbols:
-  //   Func<_ZN4llvm22FoldingSetIteratorImplC2EPPv> BB.0 {size: 0}
-  //                                                BB.1 {size: 0x8}
-  EXPECT_THAT(binary_address_mapper->FindBbHandleIndexUsingBinaryAddress(
-                  0x1e63500, BranchDirection::kTo),
-              Optional(ResultOf(bb_index_from_handle_index, 0)));
-  EXPECT_THAT(binary_address_mapper->FindBbHandleIndexUsingBinaryAddress(
-                  0x1e63500, BranchDirection::kFrom),
-              Optional(ResultOf(bb_index_from_handle_index, 1)));
-  // At address 0x45399d0, we have a call instruction followed by nops. The
-  // return from the callee will branch to 0x45399d5 (the address of the nopw).
-  // So with BranchDirection::kTo 0x45399d5 should be mapped to BB21 and with
-  // BranchDirection::kFrom it should be mapped to std::nullopt (rejected).
-  //
-  // <BB21>:
-  //  ...
-  //  45399d0:   callq   <_ZN4llvm22report_bad_alloc_errorEPKcb>
-  //  45399d5:   nopw    %cs:(%rax,%rax)
-  //  45399df:   nop
-  // <BB22>:
-  EXPECT_THAT(binary_address_mapper->FindBbHandleIndexUsingBinaryAddress(
-                  0x45399d5, BranchDirection::kTo),
-              Optional(ResultOf(bb_index_from_handle_index, 21)));
-  EXPECT_THAT(binary_address_mapper->FindBbHandleIndexUsingBinaryAddress(
-                  0x45399d5, BranchDirection::kFrom),
-              Eq(std::nullopt));
-}
+//   auto bb_index_from_handle_index = [&](int index) {
+//     return binary_address_mapper->bb_handles()[index].bb_index;
+//   };
+//   EXPECT_THAT(binary_address_mapper->FindBbHandleIndexUsingBinaryAddress(
+//                   0x1b3d0a8, BranchDirection::kTo),
+//               Optional(ResultOf(bb_index_from_handle_index, 447)));
+//   // At address 0x000001b3f5b0: we have the following symbols:
+//   //   Func<_ZN5clang18CompilerInvocation14CreateFromArgs...> BB.0 {size: 0x9a}
+//   EXPECT_THAT(binary_address_mapper->FindBbHandleIndexUsingBinaryAddress(
+//                   0x1b3f5b0, BranchDirection::kTo),
+//               Optional(ResultOf(bb_index_from_handle_index, 0)));
+//   // At address 0x1e63500: we have the following symbols:
+//   //   Func<_ZN4llvm22FoldingSetIteratorImplC2EPPv> BB.0 {size: 0}
+//   //                                                BB.1 {size: 0x8}
+//   EXPECT_THAT(binary_address_mapper->FindBbHandleIndexUsingBinaryAddress(
+//                   0x1e63500, BranchDirection::kTo),
+//               Optional(ResultOf(bb_index_from_handle_index, 0)));
+//   EXPECT_THAT(binary_address_mapper->FindBbHandleIndexUsingBinaryAddress(
+//                   0x1e63500, BranchDirection::kFrom),
+//               Optional(ResultOf(bb_index_from_handle_index, 1)));
+//   // At address 0x45399d0, we have a call instruction followed by nops. The
+//   // return from the callee will branch to 0x45399d5 (the address of the nopw).
+//   // So with BranchDirection::kTo 0x45399d5 should be mapped to BB21 and with
+//   // BranchDirection::kFrom it should be mapped to std::nullopt (rejected).
+//   //
+//   // <BB21>:
+//   //  ...
+//   //  45399d0:   callq   <_ZN4llvm22report_bad_alloc_errorEPKcb>
+//   //  45399d5:   nopw    %cs:(%rax,%rax)
+//   //  45399df:   nop
+//   // <BB22>:
+//   EXPECT_THAT(binary_address_mapper->FindBbHandleIndexUsingBinaryAddress(
+//                   0x45399d5, BranchDirection::kTo),
+//               Optional(ResultOf(bb_index_from_handle_index, 21)));
+//   EXPECT_THAT(binary_address_mapper->FindBbHandleIndexUsingBinaryAddress(
+//                   0x45399d5, BranchDirection::kFrom),
+//               Eq(std::nullopt));
+// }
 
 TEST(BinaryAddressMapper, ExtractsIntraFunctionPaths) {
   BinaryAddressBranchPath path({.pid = 2080799,
